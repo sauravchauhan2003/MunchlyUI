@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:munchly/logic/Routes.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -132,7 +133,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(height: 25),
                     ElevatedButton(
                       onPressed: () {
-                        // Your sign up logic
+                        Navigator.pushReplacementNamed(
+                          context,
+                          Routes.HomeScreen,
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,

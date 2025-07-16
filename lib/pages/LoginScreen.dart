@@ -85,18 +85,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 15),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed:
-                            () => Navigator.pushNamed(
-                              context,
-                              Routes.ForgotPassword,
-                            ),
-                        child: Text('Forgot Password'),
-                      ),
-                    ),
+                    SizedBox(
+                      height: 25,
+                    ), // adjusted spacing after password field
                     ElevatedButton(
                       onPressed: () {
                         // Your login logic
