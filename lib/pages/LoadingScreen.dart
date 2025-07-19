@@ -41,17 +41,21 @@ class _LoadingScreenState extends State<LoadingScreen>
   }
 
   Future<void> _checkAuthentication() async {
-    await Future.delayed(
-      Duration(seconds: 2),
-    ); // Let the animation play briefly
-
+    await Future.delayed(Duration(seconds: 2)); // Let animation play
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt');
+    final address = prefs.getStringList('user_address');
+    final lat = prefs.getDouble('latitude');
+    final lng = prefs.getDouble('longitude');
 
     if (token == null || token.isEmpty) {
       Navigator.pushReplacementNamed(context, Routes.LoginScreen);
+    } else if (address == null || address.isEmpty) {
+      Navigator.pushReplacementNamed(context, Routes.AddressPage);
+    } else if (lat == null || lng == null) {
+      Navigator.pushReplacementNamed(context, Routes.LocationPage);
     } else {
-      Navigator.pushReplacementNamed(context, Routes.HomeScreen); // ✅ Add this
+      Navigator.pushReplacementNamed(context, Routes.HomeScreen);
     }
   }
 

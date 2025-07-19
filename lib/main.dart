@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:munchly/logic/Routes.dart';
+import 'package:munchly/pages/AddressPage.dart';
 import 'package:munchly/pages/HomeScreen.dart';
 import 'package:munchly/pages/LoadingScreen.dart';
+import 'package:munchly/pages/LocationPage.dart';
 import 'package:munchly/pages/LoginScreen.dart';
 import 'package:munchly/pages/SignUpScreen.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Required for plugins like SharedPreferences
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -23,6 +25,8 @@ class MyApp extends StatelessWidget {
         Routes.LoginScreen: (_) => LoginScreen(),
         Routes.SignUpPage: (_) => SignUpScreen(),
         Routes.HomeScreen: (_) => HomeScreen(),
+        Routes.LocationPage: (_) => LocationPage(),
+        Routes.AddressPage: (_) => AddressInputScreen(),
       },
     );
   }

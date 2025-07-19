@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:munchly/logic/Routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -8,6 +9,22 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isObscured = true;
+
+  Future<void> _handleLogin() async {
+    // Dummy login logic — replace with your auth request
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('jwt', 'sample_token');
+
+    final address = prefs.getStringList('user_address');
+    final lat = prefs.getDouble('latitude');
+    final lng = prefs.getDouble('longitude');
+
+    if (address != null && lat != null && lng != null) {
+      Navigator.pushReplacementNamed(context, Routes.HomeScreen);
+    } else {
+      Navigator.pushReplacementNamed(context, Routes.AddressPage);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,11 +90,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ? Icons.visibility_off
                                 : Icons.visibility,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              isObscured = !isObscured;
-                            });
-                          },
+                          onPressed:
+                              () => setState(() => isObscured = !isObscured),
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -85,13 +99,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 25,
-                    ), // adjusted spacing after password field
+                    SizedBox(height: 25),
                     ElevatedButton(
-                      onPressed: () {
-                        // Your login logic
-                      },
+                      onPressed: _handleLogin,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                         minimumSize: Size(double.infinity, 50),

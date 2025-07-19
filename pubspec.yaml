@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   lottie: ^2.7.0
   shared_preferences: ^2.2.2
+  geolocator: ^11.0.0
+  google_maps_flutter: ^2.6.0
 
 dev_dependencies:
   flutter_test:

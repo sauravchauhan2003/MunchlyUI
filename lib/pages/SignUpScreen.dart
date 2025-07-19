@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:munchly/logic/Routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -9,6 +10,22 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   bool isPasswordObscured = true;
   bool isConfirmObscured = true;
+
+  Future<void> _handleSignup() async {
+    // Dummy signup logic — replace with real API call
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('jwt', 'dummy_signup_token');
+
+    final address = prefs.getStringList('user_address');
+    final lat = prefs.getDouble('latitude');
+    final lng = prefs.getDouble('longitude');
+
+    if (address != null && lat != null && lng != null) {
+      Navigator.pushReplacementNamed(context, Routes.HomeScreen);
+    } else {
+      Navigator.pushReplacementNamed(context, Routes.AddressPage);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +61,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(height: 5),
                     TextField(
                       decoration: InputDecoration(
-                        hintText: 'John doe',
+                        hintText: 'John Doe',
                         filled: true,
                         fillColor: Colors.grey.shade200,
                         border: OutlineInputBorder(
@@ -86,11 +103,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ? Icons.visibility_off
                                 : Icons.visibility,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              isPasswordObscured = !isPasswordObscured;
-                            });
-                          },
+                          onPressed:
+                              () => setState(
+                                () => isPasswordObscured = !isPasswordObscured,
+                              ),
                         ),
                         filled: true,
                         fillColor: Colors.grey.shade200,
@@ -116,11 +132,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ? Icons.visibility_off
                                 : Icons.visibility,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              isConfirmObscured = !isConfirmObscured;
-                            });
-                          },
+                          onPressed:
+                              () => setState(
+                                () => isConfirmObscured = !isConfirmObscured,
+                              ),
                         ),
                         filled: true,
                         fillColor: Colors.grey.shade200,
@@ -132,12 +147,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     SizedBox(height: 25),
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(
-                          context,
-                          Routes.HomeScreen,
-                        );
-                      },
+                      onPressed: _handleSignup,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                         minimumSize: Size(double.infinity, 50),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:munchly/logic/Routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocationPage extends StatefulWidget {
@@ -53,7 +54,6 @@ class _LocationPageState extends State<LocationPage> {
     });
   }
 
-  /// Save to SharedPreferences
   Future<void> _saveLocation() async {
     if (_currentLatLng == null) return;
     final prefs = await SharedPreferences.getInstance();
@@ -61,9 +61,7 @@ class _LocationPageState extends State<LocationPage> {
     await prefs.setDouble('longitude', _currentLatLng!.longitude);
 
     if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Location saved')));
+      Navigator.pushReplacementNamed(context, Routes.HomeScreen);
     }
   }
 
