@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:munchly/logic/Routes.dart';
+import 'package:munchly/logic/authentication_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -8,22 +9,56 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
   bool isPasswordObscured = true;
   bool isConfirmObscured = true;
 
   Future<void> _handleSignup() async {
-    // Dummy signup logic — replace with real API call
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('jwt', 'dummy_signup_token');
+    final username = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final confirm = _confirmController.text;
 
-    final address = prefs.getStringList('user_address');
-    final lat = prefs.getDouble('latitude');
-    final lng = prefs.getDouble('longitude');
+    if (username.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirm.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Please fill all fields')));
+      return;
+    }
 
-    if (address != null && lat != null && lng != null) {
-      Navigator.pushReplacementNamed(context, Routes.HomeScreen);
+    if (password != confirm) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Passwords do not match')));
+      return;
+    }
+
+    final authService = AuthenticationService();
+    final token = await authService.register(email, username, password);
+
+    if (token != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwt', token); // Store JWT token
+
+      final address = prefs.getStringList('user_address');
+      final lat = prefs.getDouble('latitude');
+      final lng = prefs.getDouble('longitude');
+
+      if (address != null && lat != null && lng != null) {
+        Navigator.pushReplacementNamed(context, Routes.HomeScreen);
+      } else {
+        Navigator.pushReplacementNamed(context, Routes.AddressPage);
+      }
     } else {
-      Navigator.pushReplacementNamed(context, Routes.AddressPage);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Signup failed')));
     }
   }
 
@@ -60,6 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     Text('NAME', style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 5),
                     TextField(
+                      controller: _nameController,
                       decoration: InputDecoration(
                         hintText: 'John Doe',
                         filled: true,
@@ -77,6 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     SizedBox(height: 5),
                     TextField(
+                      controller: _emailController,
                       decoration: InputDecoration(
                         hintText: 'example@gmail.com',
                         filled: true,
@@ -94,6 +131,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     SizedBox(height: 5),
                     TextField(
+                      controller: _passwordController,
                       obscureText: isPasswordObscured,
                       decoration: InputDecoration(
                         hintText: '********',
@@ -123,6 +161,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     SizedBox(height: 5),
                     TextField(
+                      controller: _confirmController,
                       obscureText: isConfirmObscured,
                       decoration: InputDecoration(
                         hintText: '********',

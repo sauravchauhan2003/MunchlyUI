@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:munchly/logic/Routes.dart';
+import 'package:munchly/logic/authentication_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -8,21 +9,41 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool isObscured = true;
 
   Future<void> _handleLogin() async {
-    // Dummy login logic — replace with your auth request
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('jwt', 'sample_token');
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text;
 
-    final address = prefs.getStringList('user_address');
-    final lat = prefs.getDouble('latitude');
-    final lng = prefs.getDouble('longitude');
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Please fill all fields')));
+      return;
+    }
 
-    if (address != null && lat != null && lng != null) {
-      Navigator.pushReplacementNamed(context, Routes.HomeScreen);
+    final authService = AuthenticationService();
+    final token = await authService.login(username, password);
+
+    if (token != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwt', token); // Save the token here ✅
+
+      final address = prefs.getStringList('user_address');
+      final lat = prefs.getDouble('latitude');
+      final lng = prefs.getDouble('longitude');
+
+      if (address != null && lat != null && lng != null) {
+        Navigator.pushReplacementNamed(context, Routes.HomeScreen);
+      } else {
+        Navigator.pushReplacementNamed(context, Routes.AddressPage);
+      }
     } else {
-      Navigator.pushReplacementNamed(context, Routes.AddressPage);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Invalid username or password')));
     }
   }
 
@@ -57,13 +78,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: ListView(
                   children: [
                     Text(
-                      'EMAIL',
+                      'USERNAME',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 5),
                     TextField(
+                      controller: _usernameController,
                       decoration: InputDecoration(
-                        hintText: 'example@gmail.com',
+                        hintText: 'Enter your username',
                         filled: true,
                         fillColor: Colors.grey.shade200,
                         border: OutlineInputBorder(
@@ -79,6 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: 5),
                     TextField(
+                      controller: _passwordController,
                       obscureText: isObscured,
                       decoration: InputDecoration(
                         hintText: '*********',
