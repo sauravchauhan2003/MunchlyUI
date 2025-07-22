@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:munchly/pages/MenuScreen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  void _navigateToMenu(BuildContext context, String time) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MenuScreen(time: time)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
-      // ✅ Drawer (clickable)
       drawer: const _AppDrawer(),
-
       appBar: AppBar(
         title: const Text("Munchly"),
         backgroundColor: Colors.orange,
         elevation: 0,
       ),
-
-      // ✅ Everything is wrapped cleanly
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -29,12 +32,12 @@ class HomeScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 30),
-
               _CategoryCard(
                 title: 'Breakfast',
                 subtitle: 'Start your day fresh',
                 icon: Icons.free_breakfast,
                 color: Colors.orange.shade100,
+                onTap: () => _navigateToMenu(context, 'BREAKFAST'),
               ),
               const SizedBox(height: 20),
               _CategoryCard(
@@ -42,6 +45,7 @@ class HomeScreen extends StatelessWidget {
                 subtitle: 'Midday cravings?',
                 icon: Icons.lunch_dining,
                 color: Colors.orange.shade100,
+                onTap: () => _navigateToMenu(context, 'LUNCH'),
               ),
               const SizedBox(height: 20),
               _CategoryCard(
@@ -49,34 +53,9 @@ class HomeScreen extends StatelessWidget {
                 subtitle: 'Wind down deliciously',
                 icon: Icons.dinner_dining,
                 color: Colors.orange.shade100,
+                onTap: () => _navigateToMenu(context, 'DINNER'),
               ),
-
               const Spacer(),
-
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Should be clickable
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Fetching menu...')),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 60,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    "Explore Menu",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
               const SizedBox(height: 20),
             ],
           ),
@@ -91,22 +70,20 @@ class _CategoryCard extends StatelessWidget {
   final String subtitle;
   final IconData icon;
   final Color color;
+  final VoidCallback onTap;
 
   const _CategoryCard({
     required this.title,
     required this.subtitle,
     required this.icon,
     required this.color,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Selected $title')));
-      },
+      onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
