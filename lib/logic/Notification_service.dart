@@ -33,7 +33,6 @@ class NotificationService {
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-    // Request notification permissions
     if (Platform.isAndroid) {
       final status = await Permission.notification.request();
       if (!status.isGranted) {
@@ -73,10 +72,16 @@ class NotificationService {
             final decoded = jsonDecode(message);
             if (decoded is Map<String, dynamic>) {
               _controller.add(decoded);
-              _showLocalNotification(
-                decoded['title'] ?? 'Munchly',
-                decoded['body'] ?? 'You have a new message',
-              );
+
+              final title = '✅ Order Confirmed';
+              final items = (decoded['items'] as List)
+                  .map((item) => item['itemname'] as String)
+                  .join(', ');
+              final payment = decoded['paymentMethod'] ?? 'Unknown';
+              final status = decoded['orderStatus'] ?? 'UNKNOWN';
+              final body = '$items | Payment: $payment | Status: $status';
+
+              _showLocalNotification(title, body);
             }
           } catch (e) {
             debugPrint("Failed to decode WebSocket message: $e");

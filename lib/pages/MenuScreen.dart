@@ -107,7 +107,10 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
     );
   }
 
-  Future<void> placeOrder(List<MenuItem> allMenuItems) async {
+  Future<void> placeOrder(
+    List<MenuItem> vegItems,
+    List<MenuItem> nonVegItems,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt');
     final addressData = prefs.getStringList('user_address');
@@ -134,8 +137,9 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
       "longitude": longitude,
     };
 
+    final allItems = [...vegItems, ...nonVegItems];
     final items =
-        allMenuItems
+        allItems
             .where((item) => cart.containsKey(item.id))
             .map(
               (item) => {
@@ -204,11 +208,9 @@ class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
             cart.isNotEmpty
                 ? FloatingActionButton.extended(
                   onPressed: () async {
-                    final menuItems =
-                        _tabController.index == 0
-                            ? await futureVegMenu
-                            : await futureNonVegMenu;
-                    await placeOrder(menuItems);
+                    final vegItems = await futureVegMenu;
+                    final nonVegItems = await futureNonVegMenu;
+                    await placeOrder(vegItems, nonVegItems);
                   },
                   backgroundColor: Colors.orange,
                   label: const Text("Place Order"),
