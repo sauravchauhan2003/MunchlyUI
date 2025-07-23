@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:munchly/logic/Notification_service.dart';
 import 'package:munchly/logic/Routes.dart';
 import 'package:munchly/pages/AddressPage.dart';
 import 'package:munchly/pages/HomeScreen.dart';
@@ -9,6 +10,7 @@ import 'package:munchly/pages/SignUpScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().initialize();
   runApp(const MyApp());
 }
 
